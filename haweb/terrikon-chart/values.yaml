@@ -1,0 +1,21 @@
+replicaCount: 2
+image:
+  repository: terrikon/k8sphp
+  tag: "latest"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  cpuUtilization: 80
+
+metallb:
+  enabled: true
+  poolName: "auto-pool"

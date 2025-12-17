@@ -1,0 +1,4 @@
+apiVersion: v2
+name: terrikon-app
+description: Auto-adapting app with MetalLB
+version: 0.1.0
