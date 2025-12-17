@@ -71,7 +71,7 @@ spec:
 ---
 
 
-# metallb-ip-pool.yaml
+# for my local subnet
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -79,7 +79,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 192.168.200.240-192.168.200.250    
+    - 192.168.200.240-192.168.200.250    #my local subnet
 
 ---
 
