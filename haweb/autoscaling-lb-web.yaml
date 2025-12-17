@@ -1,0 +1,93 @@
+#--------------------------------------------------------------
+# 
+#
+#
+#--------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrikon-app
+  labels:
+    app: terrikon-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: terrikon-app
+  template:
+    metadata:
+      labels:
+        app: terrikon-app
+    spec:
+      containers:
+        - name: terrikon-app
+          image: terrikon/k8sphp:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrikon-app-service
+  labels:
+    app: terrikon-app
+spec:
+  selector:
+    app: terrikon-app
+  type: LoadBalancer                      
+  ports:
+    - port: 80                            
+      targetPort: 80                      
+         
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: terrikon-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrikon-app
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80         
+
+---
+
+
+# metallb-ip-pool.yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: first-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.200.240-192.168.200.250    
+
+---
+
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2adv
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - first-pool                     
